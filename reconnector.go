@@ -120,7 +120,7 @@ func New(amqpHost string, handler ReconnectorEventHandler) (Reconnector, error) 
 		s.handler = handler
 	}
 
-	go s.RabbitConnect()
+	go s.RabbitReConnector()
 
 	err := s.RabbitConnect()
 	if err != nil {
