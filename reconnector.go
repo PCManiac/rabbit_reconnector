@@ -10,7 +10,8 @@ import (
 )
 
 type Reconnector interface {
-	RabbitConnect()
+	RabbitReConnector()
+	RabbitConnect() (err error)
 	GetConnection() *amqp.Connection
 	SubscribeTo(exhangeName string, queueName string, routingKey string) (<-chan amqp.Delivery, *amqp.Channel, error)
 	PublishResponse(ch *amqp.Channel, exchangeName string, replyTo string, correlationId string, body string, sessionId string, content_type string) (err error)
@@ -30,7 +31,7 @@ type server struct {
 	handler        ReconnectorEventHandler
 }
 
-func (s *server) DoRabbitConnect() (err error) {
+func (s *server) RabbitConnect() (err error) {
 	log.WithFields(log.Fields{
 		"proc": "RabbitConnect",
 	}).Warn("RabbitConnect started")
@@ -83,7 +84,7 @@ func (s *server) DoRabbitConnect() (err error) {
 	return errors.New("amqp connect error")
 }
 
-func (s *server) RabbitConnect() {
+func (s *server) RabbitReConnector() {
 	for {
 		<-s.AmqpCloseError
 
@@ -93,7 +94,7 @@ func (s *server) RabbitConnect() {
 
 		s.ExitSignal <- true
 
-		err := s.DoRabbitConnect()
+		err := s.RabbitConnect()
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
@@ -108,7 +109,7 @@ func (s *server) GetConnection() *amqp.Connection {
 	return s.AmqpConnection
 }
 
-func New(amqpHost string, handler ReconnectorEventHandler) Reconnector {
+func New(amqpHost string, handler ReconnectorEventHandler) (Reconnector, error) {
 	s := server{
 		AmqpCloseError: make(chan *amqp.Error),
 		amqpHostName:   amqpHost,
@@ -119,5 +120,12 @@ func New(amqpHost string, handler ReconnectorEventHandler) Reconnector {
 		s.handler = handler
 	}
 
-	return &s
+	go s.RabbitConnect()
+
+	err := s.RabbitConnect()
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, nil
 }
