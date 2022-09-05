@@ -90,7 +90,7 @@ func (s *server) SubscribeTo(exhangeName string, queueName string, routingKey st
 	return msgs, ch, nil
 }
 
-func (s *server) publishResponse(ch *amqp.Channel, exchangeName string, replyTo string, correlationId string, body string, sessionId string, content_type string) (err error) {
+func (s *server) PublishResponse(ch *amqp.Channel, exchangeName string, replyTo string, correlationId string, body string, sessionId string, content_type string) (err error) {
 	err1 := ch.Publish(
 		exchangeName, // exchange
 		replyTo,      // routing key
@@ -120,7 +120,7 @@ func (s *server) publishResponse(ch *amqp.Channel, exchangeName string, replyTo 
 	}
 }
 
-func (s *server) executeRPC(ch *amqp.Channel, exhangeName string, body []byte, strTimeout string, routingKey string) (response []byte, err error) {
+func (s *server) ExecuteRPC(ch *amqp.Channel, exhangeName string, body []byte, strTimeout string, routingKey string) (response []byte, err error) {
 	err = ch.ExchangeDeclare(
 		exhangeName, // name
 		"direct",    // type
@@ -262,7 +262,7 @@ func (s *server) executeRPC(ch *amqp.Channel, exhangeName string, body []byte, s
 	}
 }
 
-func (s *server) publishTo(ch *amqp.Channel, exhangeName string, routingKey string, body string) (err error) {
+func (s *server) PublishTo(ch *amqp.Channel, exhangeName string, routingKey string, body string) (err error) {
 	err = ch.ExchangeDeclare(
 		exhangeName, // name
 		"direct",    // type

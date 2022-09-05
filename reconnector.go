@@ -13,9 +13,9 @@ type Reconnector interface {
 	RabbitConnect()
 	GetConnection() *amqp.Connection
 	SubscribeTo(exhangeName string, queueName string, routingKey string) (<-chan amqp.Delivery, *amqp.Channel, error)
-	publishResponse(ch *amqp.Channel, exchangeName string, replyTo string, correlationId string, body string, sessionId string, content_type string) (err error)
-	executeRPC(ch *amqp.Channel, exhangeName string, body []byte, strTimeout string, routingKey string) (response []byte, err error)
-	publishTo(ch *amqp.Channel, exhangeName string, routingKey string, body string) (err error)
+	PublishResponse(ch *amqp.Channel, exchangeName string, replyTo string, correlationId string, body string, sessionId string, content_type string) (err error)
+	ExecuteRPC(ch *amqp.Channel, exhangeName string, body []byte, strTimeout string, routingKey string) (response []byte, err error)
+	PublishTo(ch *amqp.Channel, exhangeName string, routingKey string, body string) (err error)
 }
 
 type ReconnectorEventHandler interface {
