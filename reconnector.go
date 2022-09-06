@@ -120,6 +120,20 @@ func New(amqpHost string, handler ReconnectorEventHandler) (Reconnector, error) 
 		s.handler = handler
 	}
 
+	return &s, nil
+}
+
+func NewAndStart(amqpHost string, handler ReconnectorEventHandler) (Reconnector, error) {
+	s := server{
+		AmqpCloseError: make(chan *amqp.Error),
+		amqpHostName:   amqpHost,
+		ExitSignal:     make(chan bool, 1),
+	}
+
+	if handler != nil {
+		s.handler = handler
+	}
+
 	go s.RabbitReConnector()
 
 	err := s.RabbitConnect()
