@@ -43,7 +43,7 @@ func (s *server) SubscribeTo(exhangeName string, queueName string, routingKey st
 		queueName,       // name
 		true,            // durable
 		true,            // delete when unused
-		queueName != "", // exclusive
+		queueName == "", // exclusive
 		false,           // no-wait
 		nil,             // arguments
 	)
@@ -74,7 +74,7 @@ func (s *server) SubscribeTo(exhangeName string, queueName string, routingKey st
 		q.Name,          // queue
 		"",              // consumer
 		true,            // auto-ack
-		queueName != "", // exclusive
+		queueName == "", // exclusive
 		false,           // no-local
 		false,           // no-wait
 		nil,             // args
